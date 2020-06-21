@@ -1,7 +1,7 @@
 const sendQuery = require("./utils/send-query");
-const DELETE_TODO = `
+const DELETE_PERSON = `
   mutation($id: ID!) {
-    deleteTodo(id: $id) {
+    deletePerson(id: $id) {
       _id
     }
   }
@@ -9,7 +9,7 @@ const DELETE_TODO = `
 
 exports.handler = async (event) => {
   const { id } = JSON.parse(event.body);
-  const { data, errors } = await sendQuery(DELETE_TODO, { id });
+  const { data, errors } = await sendQuery(DELETE_PERSON, { id });
   if (errors) {
     return {
       statusCode: 500,
@@ -18,6 +18,6 @@ exports.handler = async (event) => {
   }
   return {
     statusCode: 200,
-    body: JSON.stringify({ deletedTodo: data.deleteTodo }),
+    body: JSON.stringify({ deletedPerson: data.deletePerson }),
   };
 };

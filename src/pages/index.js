@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./index.module.css";
-import Todo from "../components/todo";
+import Person from "../components/person";
 import Form from "../components/form";
 
 export default () => {
   const [status, setStatus] = useState("loading");
-  const [todos, setTodos] = useState(null);
+  const [people, setPeople] = useState(null);
 
   useEffect(() => {
     let canceled = false;
 
     if (status !== "loading") return;
 
-    axios("./api/get-all-todos").then((result) => {
+    axios("./api/get-all-people").then((result) => {
       if (canceled === true) return;
       if (result.status !== 200) {
-        console.error("error loading todos!");
+        console.error("error loading people!");
         console.error(result);
         return;
       }
 
-      setTodos(result.data.todos);
+      setPeople(result.data.people);
       setStatus("loaded");
     });
     return () => {
@@ -29,22 +29,22 @@ export default () => {
     };
   }, [status]);
 
-  const reloadTodos = () => setStatus("loading");
+  const reloadPeople = () => setStatus("loading");
 
   return (
     <main>
-      <h1 className={styles.heading}>JAMstack Todos</h1>
-      <Form reloadTodos={reloadTodos} />
-      {todos ? (
-        <ul className={styles.todos}>
-          {todos.map((todo) => (
-            <li key={todo._id} className={styles.todo}>
-              <Todo reloadTodos={reloadTodos} todo={todo} />
+      <h1 className={styles.heading}>Tom's Betting List</h1>
+      <Form reloadPeople={reloadPeople} />
+      {people ? (
+        <ul className={styles.people}>
+          {people.map((person) => (
+            <li key={person._id} className={styles.person}>
+              <Person reloadPeople={reloadPeople} person={person} />
             </li>
           ))}
         </ul>
       ) : (
-        <p className={styles.loading}>loading todos</p>
+        <p className={styles.loading}>Loading people...</p>
       )}
     </main>
   );

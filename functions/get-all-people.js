@@ -1,18 +1,17 @@
 const sendQuery = require("./utils/send-query");
-const GET_ALL_TODOS = `
+const GET_ALL_PEOPLE = `
   query {
-    allTodos {
+    allPeople {
       data {
         _id
-        text
-        completed
+        name
       }
     }
   }
 `;
 
 exports.handler = async () => {
-  const { data, errors } = await sendQuery(GET_ALL_TODOS);
+  const { data, errors } = await sendQuery(GET_ALL_PEOPLE);
   if (errors) {
     return {
       statusCode: 500,
@@ -21,6 +20,6 @@ exports.handler = async () => {
   }
   return {
     statusCode: 200,
-    body: JSON.stringify({ todos: data.allTodos.data }),
+    body: JSON.stringify({ people: data.allPeople.data }),
   };
 };

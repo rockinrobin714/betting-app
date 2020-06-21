@@ -2,29 +2,29 @@ import React, { useState } from "react";
 import axios from "axios";
 import styles from "./form.module.css";
 
-const Form = ({ reloadTodos }) => {
-  const [text, setText] = useState("");
+const Form = ({ reloadPeople }) => {
+  const [name, setName] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (text === "") return;
-    await axios.post("/api/create-todo", { text });
-    setText("");
-    reloadTodos();
+    if (name === "") return;
+    await axios.post("/api/create-person", { name });
+    setName("");
+    reloadPeople();
   };
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <label className={styles.label}>
-        Add a todo
+        Add a person
         <input
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => setName(e.target.value)}
           type="text"
-          value={text}
+          value={name}
           className={styles.input}
         />
       </label>
-      <button className={styles.button}>Save Todo</button>
+      <button className={styles.button}>Save</button>
     </form>
   );
 };

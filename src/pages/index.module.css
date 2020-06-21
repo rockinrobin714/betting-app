@@ -8,7 +8,7 @@ html {
   text-align: center;
 }
 
-.todos {
+.people {
   border-top: 1px solid #ddd;
   list-style: none;
   margin: 2rem auto;
@@ -16,7 +16,7 @@ html {
   padding: 0;
 }
 
-.todo {
+.person {
   align-items: center;
   border-bottom: 1px solid #ddd;
   box-sizing: border-box;

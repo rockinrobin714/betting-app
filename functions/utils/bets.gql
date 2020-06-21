@@ -1,0 +1,14 @@
+type Person {
+  name: String!
+  bets: [Bet]
+}
+
+type Bet {
+  win: Boolean!
+  date: String!
+  person: Person
+}
+
+type Query {
+  allPeople: [Person!]!
+}
