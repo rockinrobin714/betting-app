@@ -7,6 +7,14 @@ const GET_ALL_PEOPLE = `
         name
       }
     }
+    allBets {
+      data {
+        wins
+        _id
+        person
+        date
+      }
+    }
   }
 `;
 
@@ -20,6 +28,9 @@ exports.handler = async () => {
   }
   return {
     statusCode: 200,
-    body: JSON.stringify({ people: data.allPeople.data }),
+    body: JSON.stringify({
+      people: data.allPeople.data,
+      bets: data.allBets.data,
+    }),
   };
 };

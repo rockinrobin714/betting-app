@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import styles from "./index.module.css";
-import Person from "../components/person";
-import Form from "../components/form";
+import Container from "react-bootstrap/Container";
+import Spinner from "react-bootstrap/Spinner";
+import Button from "react-bootstrap/Button";
+import AddNameModal from "../components/add-name-modal";
+import Table from "../components/table";
+import AddDateModal from "../components/add-date-modal";
+
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default () => {
   const [status, setStatus] = useState("loading");
-  const [people, setPeople] = useState(null);
+  const [data, setData] = useState(null);
+  const [showAddDateModal, setAddDateModal] = useState(false);
+  const [showAddNameModal, setAddNameModal] = useState(false);
+  const [date, setDate] = useState();
 
   useEffect(() => {
     let canceled = false;
-
     if (status !== "loading") return;
 
     axios("./api/get-all-people").then((result) => {
@@ -20,8 +27,8 @@ export default () => {
         console.error(result);
         return;
       }
-
-      setPeople(result.data.people);
+      console.log(result.data);
+      setData(result.data);
       setStatus("loaded");
     });
     return () => {
@@ -29,23 +36,35 @@ export default () => {
     };
   }, [status]);
 
-  const reloadPeople = () => setStatus("loading");
+  const reloadData = () => setStatus("loading");
 
   return (
-    <main>
-      <h1 className={styles.heading}>Tom's Betting List</h1>
-      <Form reloadPeople={reloadPeople} />
-      {people ? (
-        <ul className={styles.people}>
-          {people.map((person) => (
-            <li key={person._id} className={styles.person}>
-              <Person reloadPeople={reloadPeople} person={person} />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className={styles.loading}>Loading people...</p>
-      )}
-    </main>
+    <Container>
+      <main>
+        <h1>Tom's Betting List</h1>
+        <div style={{ margin: "20px 0" }}>
+          <Button onClick={() => setAddDateModal(true)}>Add New Date</Button>{" "}
+          <Button onClick={() => setAddNameModal(true)}>Add New Person</Button>
+        </div>
+
+        {data ? (
+          <Table newDate={date} data={data} reloadData={reloadData} />
+        ) : (
+          <Spinner animation="border" role="status">
+            <span className="sr-only">Loading...</span>
+          </Spinner>
+        )}
+        <AddDateModal
+          setDate={setDate}
+          handleClose={() => setAddDateModal(false)}
+          show={showAddDateModal}
+        />
+        <AddNameModal
+          reloadData={reloadData}
+          handleClose={() => setAddNameModal(false)}
+          show={showAddNameModal}
+        />
+      </main>
+    </Container>
   );
 };

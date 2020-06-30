@@ -1,14 +1,14 @@
 type Person {
   name: String!
-  bets: [Bet]
 }
 
 type Bet {
-  win: Boolean!
+  wins: [Boolean]!
   date: String!
-  person: Person
+  person: String!
 }
 
 type Query {
   allPeople: [Person!]!
+  allBets: [Bet!]!
 }
