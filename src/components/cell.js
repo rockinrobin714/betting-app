@@ -16,8 +16,6 @@ const Cell = ({ dates, item, id, idx, reloadData }) => {
   };
 
   const handleEdit = (wins) => {
-    console.log(dates);
-    console.log(dates[idx - 1]);
     axios
       .post("/api/add-bet", { wins, date: dates[idx - 1], person: id })
       .then(() => {
