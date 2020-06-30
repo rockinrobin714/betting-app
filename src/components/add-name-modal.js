@@ -18,7 +18,7 @@ const AddNameModal = ({ reloadData, handleClose, show }) => {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Add New Date</Modal.Title>
+        <Modal.Title>Add New Person</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <label>

@@ -43,8 +43,12 @@ export default () => {
       <main>
         <h1>Tom's Betting List</h1>
         <div style={{ margin: "20px 0" }}>
-          <Button onClick={() => setAddDateModal(true)}>Add New Date</Button>{" "}
-          <Button onClick={() => setAddNameModal(true)}>Add New Person</Button>
+          <Button onClick={() => setAddDateModal(true)}>
+            Add New Date (Column)
+          </Button>{" "}
+          <Button onClick={() => setAddNameModal(true)}>
+            Add New Person (Row)
+          </Button>
         </div>
 
         {data ? (
