@@ -45,7 +45,7 @@ const Cell = ({ dates, item, id, idx, reloadData }) => {
       return (
         <>
           <span style={{ whiteSpace: "nowrap" }}>
-            {input.win}/{input.total} {percentage * 100}%
+            {input.win}/{input.total} {Math.round(percentage * 100)}%
             <div
               style={{
                 marginLeft: "5px",
