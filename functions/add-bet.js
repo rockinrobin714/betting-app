@@ -1,7 +1,7 @@
 const sendQuery = require("./utils/send-query");
 
 const ADD_BET = `
-  mutation($wins: [Boolean]!, $date: String!, $person: String!) {
+  mutation($wins: [String]!, $date: String!, $person: String!) {
     createBet(data: {wins: $wins, date: $date, person: $person}) {
       _id
     }

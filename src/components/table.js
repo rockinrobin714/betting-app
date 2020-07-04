@@ -25,11 +25,31 @@ const DataTable = ({ data, newDate, reloadData }) => {
   dates = [...new Set(dates)].sort();
 
   const calculateStats = (row) => {
-    console.log(row);
     const rowCopy = [...row];
     rowCopy.shift();
-    // rowCopy.filter((item) => item);
-    console.log(rowCopy);
+    const data = [].concat.apply([], rowCopy);
+    let total = { win: 0, total: 0 };
+    let ten = { win: 0, total: 0 };
+    let five = { win: 0, total: 0 };
+    for (let i = data.length - 1; i >= 0; i--) {
+      const num = total.total;
+      const win = data[i] === "win";
+      const empty = data[i] === "";
+      if (!empty) {
+        if (data[i] === "") console.log("boop");
+        if (num < 10) {
+          ten.total++;
+          win && ten.win++;
+        }
+        if (num < 5) {
+          five.total++;
+          win && five.win++;
+        }
+        total.total++;
+        win && total.win++;
+      }
+    }
+    return [ten, five, total];
   };
 
   useEffect(() => {
@@ -40,17 +60,16 @@ const DataTable = ({ data, newDate, reloadData }) => {
       dataObj[key].bets.forEach((bet) => {
         row[dates.indexOf(bet.date) + 1] = bet.wins;
       });
-      calculateStats(row);
-      initialData.push({ id: key, row });
+      initialData.push({ id: key, row: [...row, ...calculateStats(row)] });
     }
     setTableData(initialData);
-  }, []);
+  }, [newDate, data]);
 
   const formatDate = (date) => {
     return `${date.slice(4, 6)}/${date.slice(6, 8)}/${date.slice(0, 4)}`;
   };
 
-  const handleDelete = (id) => {
+  const deletePerson = (id) => {
     axios.post("/api/delete-person", { id }).then(reloadData);
   };
 
@@ -67,7 +86,7 @@ const DataTable = ({ data, newDate, reloadData }) => {
     setTableData(dataCopy);
   };
 
-  const sortBets = () => {
+  const sortBets = (idx) => {
     // todo
   };
 
@@ -75,14 +94,25 @@ const DataTable = ({ data, newDate, reloadData }) => {
     <Table responsive striped bordered hover>
       <thead>
         <tr>
-          <th onClick={sortNames}>
-            Name {sortIdx === "name" && (sortDir ? "⬆️" : "⬇️")}
+          <th>
+            <button
+              style={{
+                background: "transparent",
+                border: 0,
+              }}
+              onClick={sortNames}
+            >
+              Name {sortIdx === "name" && (sortDir ? "⬆️" : "⬇️")}
+            </button>
           </th>
           {dates.map((date, idx) => (
             <th onClick={() => sortBets(idx)} key={date}>
               {formatDate(date)}
             </th>
           ))}
+          <th width="200">Last 10</th>
+          <th>Last 5</th>
+          <th>Total</th>
           <th>Delete Row</th>
         </tr>
       </thead>
@@ -106,7 +136,7 @@ const DataTable = ({ data, newDate, reloadData }) => {
                   border: 0,
                   cursor: "pointer",
                 }}
-                onClick={() => handleDelete(userInfo.id)}
+                onClick={() => deletePerson(userInfo.id)}
               >
                 <span role="img" aria-label="delete">
                   ❌

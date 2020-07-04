@@ -3,7 +3,7 @@ type Person {
 }
 
 type Bet {
-  wins: [Boolean]!
+  wins: [String]!
   date: String!
   person: String!
 }
