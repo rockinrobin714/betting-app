@@ -41,15 +41,20 @@ export default () => {
     <Container>
       <main>
         <h1>Tom's Betting List</h1>
-        <div style={{ margin: "20px 0" }}>
-          <Button onClick={() => setAddDateModal(true)}>
+        <div style={{ marginLeft: "-20px" }}>
+          <Button
+            style={{ margin: "20px" }}
+            onClick={() => setAddDateModal(true)}
+          >
             Add New Date (Column)
-          </Button>{" "}
-          <Button onClick={() => setAddNameModal(true)}>
+          </Button>
+          <Button
+            style={{ margin: "20px" }}
+            onClick={() => setAddNameModal(true)}
+          >
             Add New Person (Row)
           </Button>
         </div>
-
         {data ? (
           <Table newDate={date} data={data} reloadData={reloadData} />
         ) : (
