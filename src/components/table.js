@@ -7,8 +7,8 @@ import Cell from "./cell";
 
 const DataTable = ({ data, newDate, reloadData }) => {
   const [tableData, setTableData] = useState([]);
-  const [sortIdx, setSortIdx] = useState();
-  const [sortDir, setSortDir] = useState(true);
+  const [sortedData, setSortedData] = useState([]);
+  const [sort, setSort] = useState({ dir: true, on: "name" });
   const { people, bets } = data;
 
   const dataObj = {};
@@ -63,6 +63,10 @@ const DataTable = ({ data, newDate, reloadData }) => {
     setTableData(initialData);
   }, [newDate, data]);
 
+  useEffect(() => {
+    sortData();
+  }, [sort, tableData]);
+
   const formatDate = (date) => {
     return `${date.slice(4, 6)}/${date.slice(6, 8)}/${date.slice(0, 4)}`;
   };
@@ -71,21 +75,67 @@ const DataTable = ({ data, newDate, reloadData }) => {
     axios.post("/api/delete-person", { id }).then(reloadData);
   };
 
-  const sortNames = () => {
-    const dataCopy = [...tableData];
-    const sortDirNum = sortDir ? 1 : -1;
-    dataCopy.sort((a, b) => sortDirNum * a.row[0].localeCompare(b.row[0]));
-    if (sortIdx === "name") {
-      setSortDir(!sortDir);
+  const sortData = () => {
+    if (sort.on === "name") {
+      sortNames();
+    } else if (typeof sort.on == "number") {
+      sortBets();
     } else {
-      setSortIdx("name");
-      setSortDir(false);
+      sortStats();
     }
-    setTableData(dataCopy);
   };
 
-  const sortBets = (idx) => {
-    // todo
+  const sortNames = () => {
+    const dataCopy = [...tableData];
+    const sortDirNum = sort.dir ? 1 : -1;
+    dataCopy.sort((a, b) => sortDirNum * a.row[0].localeCompare(b.row[0]));
+    setSortedData(dataCopy);
+  };
+
+  const calculateWinScore = (arr) => {
+    let count = 0;
+    if (!arr) return -3;
+    arr.wins.forEach((win) => {
+      if (win === "win") {
+        count++;
+      } else {
+        count--;
+      }
+    });
+    return count;
+  };
+
+  const sortBets = () => {
+    const dataCopy = [...tableData];
+    const sortDirNum = sort.dir ? 1 : -1;
+    const idx = sort.on;
+    dataCopy.sort((a, b) => {
+      return (
+        sortDirNum *
+        (calculateWinScore(a.row[idx]) - calculateWinScore(b.row[idx]))
+      );
+    });
+    setSortedData(dataCopy);
+  };
+
+  const sortStats = () => {
+    const dataCopy = [...tableData];
+    const sortDirNum = sort.dir ? 1 : -1;
+    const totalRows = dataCopy[0].row.length;
+    let idx;
+    if (sort.on === "bet10") {
+      idx = totalRows - 3;
+    } else if (sort.on === "bet5") {
+      idx = totalRows - 2;
+    } else {
+      idx = totalRows - 1;
+    }
+    dataCopy.sort((a, b) => {
+      const per1 = a.row[idx].total ? a.row[idx].win / a.row[idx].total : -1;
+      const per2 = b.row[idx].total ? b.row[idx].win / b.row[idx].total : -1;
+      return sortDirNum * (per1 - per2);
+    });
+    setSortedData(dataCopy);
   };
 
   const downloadToCSV = () => {
@@ -118,6 +168,12 @@ const DataTable = ({ data, newDate, reloadData }) => {
     document.body.removeChild(downloadLink);
   };
 
+  const headerStyle = {
+    background: "transparent",
+    border: 0,
+    fontWeight: 600,
+  };
+
   return (
     <>
       <Table responsive striped bordered hover>
@@ -125,28 +181,52 @@ const DataTable = ({ data, newDate, reloadData }) => {
           <tr>
             <th>
               <button
-                style={{
-                  background: "transparent",
-                  border: 0,
-                }}
-                onClick={sortNames}
+                style={headerStyle}
+                onClick={() => setSort({ dir: !sort.dir, on: "name" })}
               >
-                Name {sortIdx === "name" && (sortDir ? "⬆️" : "⬇️")}
+                Name {sort.on === "name" && (sort.dir ? "⬆️" : "⬇️")}
               </button>
             </th>
             {dates.map((date, idx) => (
-              <th onClick={() => sortBets(idx)} key={date}>
-                {formatDate(date)}
+              <th key={date}>
+                <button
+                  style={headerStyle}
+                  onClick={() => setSort({ dir: !sort.dir, on: idx + 1 })}
+                >
+                  {formatDate(date)}{" "}
+                  {sort.on === idx + 1 && (sort.dir ? "⬆️" : "⬇️")}
+                </button>
               </th>
             ))}
-            <th width="200">Last 10</th>
-            <th>Last 5</th>
-            <th>Total</th>
+            <th>
+              <button
+                style={headerStyle}
+                onClick={() => setSort({ dir: !sort.dir, on: "bet10" })}
+              >
+                Last 10 {sort.on === "bet10" && (sort.dir ? "⬆️" : "⬇️")}
+              </button>
+            </th>
+            <th>
+              <button
+                style={headerStyle}
+                onClick={() => setSort({ dir: !sort.dir, on: "bet5" })}
+              >
+                Last 5 {sort.on === "bet5" && (sort.dir ? "⬆️" : "⬇️")}
+              </button>
+            </th>
+            <th>
+              <button
+                style={headerStyle}
+                onClick={() => setSort({ dir: !sort.dir, on: "betTotal" })}
+              >
+                Total {sort.on === "betTotal" && (sort.dir ? "⬆️" : "⬇️")}
+              </button>
+            </th>
             <th>Delete Row</th>
           </tr>
         </thead>
         <tbody>
-          {tableData.map((userInfo) => (
+          {sortedData.map((userInfo) => (
             <tr key={userInfo.id}>
               {userInfo.row.map((item, idx) => (
                 <Cell
