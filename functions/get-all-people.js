@@ -1,13 +1,13 @@
 const sendQuery = require("./utils/send-query");
 const GET_ALL_PEOPLE = `
   query {
-    allPeople {
+    allPeople(_size: 10000) {
       data {
         _id
         name
       }
     }
-    allBets {
+    allBets(_size: 10000) {
       data {
         wins
         _id
