@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Table from "react-bootstrap/Table";
+import Button from "react-bootstrap/Button";
 
 import Cell from "./cell";
 
@@ -90,63 +91,96 @@ const DataTable = ({ data, newDate, reloadData }) => {
     // todo
   };
 
+  const downloadToPDF = () => {
+    let csv = "";
+    const formattedDates = dates.map((date) => formatDate(date));
+    const headers = ["Name", ...formattedDates, "Last 10", "Last 5", "Total"];
+    csv += `${headers.join(",")}\n`;
+    tableData.forEach((item) => {
+      let row = "";
+      item.row.forEach((cell) => {
+        if (Array.isArray(cell)) {
+          row += `${cell.join("-")},`;
+        } else if (typeof cell === "object") {
+          row += `${cell.win}/${cell.total},`;
+        } else {
+          row += `${cell},`;
+        }
+      });
+      csv += `${row}\n`;
+    });
+    const resultsToDownload = new Blob([csv], {
+      type: "text/csv;charset=utf-8",
+    });
+    const downloadLink = document.createElement("a");
+    downloadLink.href = URL.createObjectURL(resultsToDownload);
+    downloadLink.download = "toms-bets";
+    //  Add to the page, click it, and remove from the dom
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+
   return (
-    <Table responsive striped bordered hover>
-      <thead>
-        <tr>
-          <th>
-            <button
-              style={{
-                background: "transparent",
-                border: 0,
-              }}
-              onClick={sortNames}
-            >
-              Name {sortIdx === "name" && (sortDir ? "⬆️" : "⬇️")}
-            </button>
-          </th>
-          {dates.map((date, idx) => (
-            <th onClick={() => sortBets(idx)} key={date}>
-              {formatDate(date)}
-            </th>
-          ))}
-          <th width="200">Last 10</th>
-          <th>Last 5</th>
-          <th>Total</th>
-          <th>Delete Row</th>
-        </tr>
-      </thead>
-      <tbody>
-        {tableData.map((userInfo) => (
-          <tr key={userInfo.id}>
-            {userInfo.row.map((item, idx) => (
-              <Cell
-                key={`${userInfo.id}-${idx}`}
-                item={item}
-                id={userInfo.id}
-                idx={idx}
-                dates={dates}
-                reloadData={reloadData}
-              />
-            ))}
-            <td>
+    <>
+      <Table responsive striped bordered hover>
+        <thead>
+          <tr>
+            <th>
               <button
                 style={{
                   background: "transparent",
                   border: 0,
-                  cursor: "pointer",
                 }}
-                onClick={() => deletePerson(userInfo.id)}
+                onClick={sortNames}
               >
-                <span role="img" aria-label="delete">
-                  ❌
-                </span>
+                Name {sortIdx === "name" && (sortDir ? "⬆️" : "⬇️")}
               </button>
-            </td>
+            </th>
+            {dates.map((date, idx) => (
+              <th onClick={() => sortBets(idx)} key={date}>
+                {formatDate(date)}
+              </th>
+            ))}
+            <th width="200">Last 10</th>
+            <th>Last 5</th>
+            <th>Total</th>
+            <th>Delete Row</th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {tableData.map((userInfo) => (
+            <tr key={userInfo.id}>
+              {userInfo.row.map((item, idx) => (
+                <Cell
+                  key={`${userInfo.id}-${idx}`}
+                  item={item}
+                  id={userInfo.id}
+                  idx={idx}
+                  dates={dates}
+                  reloadData={reloadData}
+                />
+              ))}
+              <td>
+                <button
+                  style={{
+                    background: "transparent",
+                    border: 0,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => deletePerson(userInfo.id)}
+                >
+                  <span role="img" aria-label="delete">
+                    ❌
+                  </span>
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <Button onClick={downloadToPDF}>Download .csv file</Button>
+    </>
   );
 };
 export default DataTable;

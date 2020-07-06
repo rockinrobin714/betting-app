@@ -27,7 +27,6 @@ export default () => {
         console.error(result);
         return;
       }
-      console.log(result.data);
       setData(result.data);
       setStatus("loaded");
     });

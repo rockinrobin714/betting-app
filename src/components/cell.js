@@ -26,14 +26,14 @@ const Cell = ({ dates, item, id, idx, reloadData }) => {
       return (
         <>
           <span>{winArr.join(" ")}</span>
-          {/* <button
+          <button
             style={{ marginLeft: "20px", ...style }}
             onClick={() => deleteBet()}
           >
             <span role="img" aria-label="delete">
               ❌
             </span>
-          </button> */}
+          </button>
         </>
       );
     } else {
