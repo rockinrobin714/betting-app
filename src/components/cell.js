@@ -25,14 +25,8 @@ const Cell = ({ dates, item, id, idx, reloadData }) => {
       });
       return (
         <>
-          <span>{winArr.join(" ")}</span>
-          <button
-            style={{ marginLeft: "20px", ...style }}
-            onClick={() => deleteBet()}
-          >
-            <span role="img" aria-label="delete">
-              ❌
-            </span>
+          <button style={style} onClick={() => setIsEditing(true)}>
+            <span>{winArr.join(" ")}</span>
           </button>
         </>
       );
@@ -62,18 +56,22 @@ const Cell = ({ dates, item, id, idx, reloadData }) => {
     }
   };
 
-  const handleEdit = (wins) => {
-    axios
-      .post("/api/add-bet", { wins, date: dates[idx - 1], person: id })
-      .then(() => {
-        reloadData();
-        setIsEditing(false);
-      });
+  const handleBetClick = (wins) => {
+    const url = item.id ? "/api/edit-bet" : "/api/add-bet";
+    const data = { wins, date: dates[idx - 1], person: id };
+    if (item.id) {
+      data.id = item.id;
+    }
+    axios.post(url, data).then(() => {
+      reloadData();
+      setIsEditing(false);
+    });
   };
 
   const deleteBet = () => {
     const { id } = item;
     axios.post("/api/delete-bet", { id }).then(reloadData);
+    setIsEditing(false);
   };
 
   const buttons = [
@@ -90,39 +88,47 @@ const Cell = ({ dates, item, id, idx, reloadData }) => {
     cursor: "pointer",
   };
 
-  return (
-    <td key={`${id}-${idx}`}>
-      {typeof item === "object" ? (
-        <>{formatCell(item, id)}</>
-      ) : item ? (
-        item
-      ) : (
-        <>
-          {isEditing ? (
-            buttons.map((button) => (
-              <>
-                <button
-                  key={`${id}-${idx}-${button.label}`}
-                  style={style}
-                  onClick={() => handleEdit(button.wins)}
-                >
-                  <span role="img" aria-label="add">
-                    {button.label}
-                  </span>
-                </button>
-              </>
-            ))
-          ) : (
-            <button style={style} onClick={() => setIsEditing(true)}>
-              <span role="img" aria-label="edit">
-                ❓
-              </span>
-            </button>
-          )}
-        </>
-      )}
-    </td>
-  );
+  const editingButtons = () => {
+    return (
+      <>
+        {buttons.map((button) => (
+          <button
+            key={`${id}-${idx}-${button.label}`}
+            style={style}
+            onClick={() => handleBetClick(button.wins)}
+          >
+            <span role="img" aria-label="add">
+              {button.label}
+            </span>
+          </button>
+        ))}
+        {item.id && (
+          <button onClick={deleteBet} style={style}>
+            ❌
+          </button>
+        )}
+      </>
+    );
+  };
+
+  const renderContent = () => {
+    if (isEditing) {
+      return editingButtons();
+    } else if (typeof item === "object") {
+      return formatCell(item, id);
+    } else if (item) {
+      return item;
+    }
+    return (
+      <button style={style} onClick={() => setIsEditing(true)}>
+        <span role="img" aria-label="edit">
+          ❓
+        </span>
+      </button>
+    );
+  };
+
+  return <td key={`${item?.id || id}-${idx}`}>{renderContent()}</td>;
 };
 
 export default Cell;
