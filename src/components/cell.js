@@ -14,9 +14,9 @@ const Cell = ({ dates, item, id, idx, reloadData }) => {
     return "#7ed321";
   };
   const formatCell = (input) => {
-    if (input.length) {
+    if (input.wins) {
       let winArr = [];
-      input.forEach((win) => {
+      input.wins.forEach((win) => {
         if (win === "win") {
           winArr.push("✅");
         } else {
@@ -72,8 +72,8 @@ const Cell = ({ dates, item, id, idx, reloadData }) => {
   };
 
   const deleteBet = () => {
-    // todo, get id
-    // axios.post("/api/delete-bet", { id }).then(reloadData);
+    const { id } = item;
+    axios.post("/api/delete-bet", { id }).then(reloadData);
   };
 
   const buttons = [

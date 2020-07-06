@@ -26,8 +26,7 @@ const DataTable = ({ data, newDate, reloadData }) => {
   dates = [...new Set(dates)].sort();
 
   const calculateStats = (row) => {
-    const rowCopy = [...row];
-    rowCopy.shift();
+    const rowCopy = row.map((bet) => bet?.wins);
     const data = [].concat.apply([], rowCopy);
     let total = { win: 0, total: 0 };
     let ten = { win: 0, total: 0 };
@@ -35,9 +34,7 @@ const DataTable = ({ data, newDate, reloadData }) => {
     for (let i = data.length - 1; i >= 0; i--) {
       const num = total.total;
       const win = data[i] === "win";
-      const empty = data[i] === "";
-      if (!empty) {
-        if (data[i] === "") console.log("boop");
+      if (data[i]) {
         if (num < 10) {
           ten.total++;
           win && ten.win++;
@@ -59,7 +56,7 @@ const DataTable = ({ data, newDate, reloadData }) => {
       const row = Array(dates.length + 1).fill("");
       row[0] = dataObj[key].name;
       dataObj[key].bets.forEach((bet) => {
-        row[dates.indexOf(bet.date) + 1] = bet.wins;
+        row[dates.indexOf(bet.date) + 1] = { id: bet._id, wins: bet.wins };
       });
       initialData.push({ id: key, row: [...row, ...calculateStats(row)] });
     }
@@ -91,7 +88,7 @@ const DataTable = ({ data, newDate, reloadData }) => {
     // todo
   };
 
-  const downloadToPDF = () => {
+  const downloadToCSV = () => {
     let csv = "";
     const formattedDates = dates.map((date) => formatDate(date));
     const headers = ["Name", ...formattedDates, "Last 10", "Last 5", "Total"];
@@ -99,8 +96,8 @@ const DataTable = ({ data, newDate, reloadData }) => {
     tableData.forEach((item) => {
       let row = "";
       item.row.forEach((cell) => {
-        if (Array.isArray(cell)) {
-          row += `${cell.join("-")},`;
+        if (cell.wins) {
+          row += `${cell.wins.join("&")},`;
         } else if (typeof cell === "object") {
           row += `${cell.win}/${cell.total},`;
         } else {
@@ -179,7 +176,7 @@ const DataTable = ({ data, newDate, reloadData }) => {
           ))}
         </tbody>
       </Table>
-      <Button onClick={downloadToPDF}>Download .csv file</Button>
+      <Button onClick={downloadToCSV}>Download .csv file</Button>
     </>
   );
 };
