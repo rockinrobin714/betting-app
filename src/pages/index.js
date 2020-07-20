@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Container from "react-bootstrap/Container";
 import Spinner from "react-bootstrap/Spinner";
 import Button from "react-bootstrap/Button";
 import AddNameModal from "../components/add-name-modal";
@@ -38,41 +37,39 @@ export default () => {
   const reloadData = () => setStatus("loading");
 
   return (
-    <Container>
-      <main>
-        <h1>Tom's Betting List</h1>
-        <div style={{ marginLeft: "-20px" }}>
-          <Button
-            style={{ margin: "20px" }}
-            onClick={() => setAddDateModal(true)}
-          >
-            Add New Date (Column)
-          </Button>
-          <Button
-            style={{ margin: "20px" }}
-            onClick={() => setAddNameModal(true)}
-          >
-            Add New Person (Row)
-          </Button>
-        </div>
-        {data ? (
-          <Table newDate={date} data={data} reloadData={reloadData} />
-        ) : (
-          <Spinner animation="border" role="status">
-            <span className="sr-only">Loading...</span>
-          </Spinner>
-        )}
-        <AddDateModal
-          setDate={setDate}
-          handleClose={() => setAddDateModal(false)}
-          show={showAddDateModal}
-        />
-        <AddNameModal
-          reloadData={reloadData}
-          handleClose={() => setAddNameModal(false)}
-          show={showAddNameModal}
-        />
-      </main>
-    </Container>
+    <main style={{ padding: "50px" }}>
+      <h1>Sports Betting Analyzer</h1>
+      <div style={{ marginLeft: "-20px" }}>
+        <Button
+          style={{ margin: "20px" }}
+          onClick={() => setAddDateModal(true)}
+        >
+          Add New Date (Column)
+        </Button>
+        <Button
+          style={{ margin: "20px" }}
+          onClick={() => setAddNameModal(true)}
+        >
+          Add New Person (Row)
+        </Button>
+      </div>
+      {data ? (
+        <Table newDate={date} data={data} reloadData={reloadData} />
+      ) : (
+        <Spinner animation="border" role="status">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+      )}
+      <AddDateModal
+        setDate={setDate}
+        handleClose={() => setAddDateModal(false)}
+        show={showAddDateModal}
+      />
+      <AddNameModal
+        reloadData={reloadData}
+        handleClose={() => setAddNameModal(false)}
+        show={showAddNameModal}
+      />
+    </main>
   );
 };

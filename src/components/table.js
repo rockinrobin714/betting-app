@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
-
 import Cell from "./cell";
 
 const DataTable = ({ data, newDate, reloadData }) => {
