@@ -111,13 +111,33 @@ const Cell = ({ dates, item, id, idx, reloadData }) => {
     );
   };
 
+  const deletePerson = () => {
+    axios.post("/api/delete-person", { id }).then(reloadData);
+  };
+
   const renderContent = () => {
     if (isEditing) {
       return editingButtons();
     } else if (typeof item === "object") {
       return formatCell(item, id);
     } else if (item) {
-      return item;
+      return (
+        <>
+          {item}
+          <button
+            style={{
+              background: "transparent",
+              border: 0,
+              cursor: "pointer",
+            }}
+            onClick={deletePerson}
+          >
+            <span role="img" aria-label="delete">
+              ❌
+            </span>
+          </button>
+        </>
+      );
     }
     return (
       <button style={style} onClick={() => setIsEditing(true)}>

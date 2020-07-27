@@ -1,0 +1,46 @@
+td,
+th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+th:first-child,
+td:first-child {
+  position: sticky;
+  left: 0px;
+}
+
+th:last-child,
+td:last-child {
+  position: sticky;
+  right: 0px;
+  min-width: 150px;
+}
+
+th:nth-last-child(2),
+td:nth-last-child(2) {
+  position: sticky;
+  right: 150px;
+  min-width: 150px;
+}
+
+th:nth-last-child(3),
+td:nth-last-child(3) {
+  position: sticky;
+  right: 300px;
+}
+
+th,
+td {
+  white-space: nowrap;
+}
+
+tbody tr:nth-of-type(odd) td {
+  background-color: #f2f2f2;
+}
+
+tbody tr:nth-of-type(even) td,
+th {
+  background-color: white;
+}

@@ -3,6 +3,7 @@ import axios from "axios";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Cell from "./cell";
+import "./table.css";
 
 const DataTable = ({ data, newDate, reloadData }) => {
   const [tableData, setTableData] = useState([]);
@@ -175,7 +176,7 @@ const DataTable = ({ data, newDate, reloadData }) => {
 
   return (
     <>
-      <Table responsive striped bordered hover>
+      <Table responsive bordered hover>
         <thead>
           <tr>
             <th>
@@ -221,7 +222,6 @@ const DataTable = ({ data, newDate, reloadData }) => {
                 Total {sort.on === "betTotal" && (sort.dir ? "⬆️" : "⬇️")}
               </button>
             </th>
-            <th>Delete Row</th>
           </tr>
         </thead>
         <tbody>
@@ -237,20 +237,6 @@ const DataTable = ({ data, newDate, reloadData }) => {
                   reloadData={reloadData}
                 />
               ))}
-              <td>
-                <button
-                  style={{
-                    background: "transparent",
-                    border: 0,
-                    cursor: "pointer",
-                  }}
-                  onClick={() => deletePerson(userInfo.id)}
-                >
-                  <span role="img" aria-label="delete">
-                    ❌
-                  </span>
-                </button>
-              </td>
             </tr>
           ))}
         </tbody>
