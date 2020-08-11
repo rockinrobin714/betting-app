@@ -71,28 +71,31 @@ const DataTable = ({ data, newDate, reloadData }) => {
   }, [sort, tableData]);
 
   const calculateAverages = (data) => {
-    const row = Array(dates.length).fill("");
+    const row = Array(dates.length + 2).fill("");
     for (let i = 0; i < row.length; i++) {
       let total = 0;
       let win = 0;
       data.forEach((item) => {
-        if (item.row[i + 1]) {
-          item.row[i + 1].wins.forEach((bet) => {
-            total++;
-            if (bet === "win") win++;
-          });
+        if (i < row.length - 2) {
+          if (item.row[i + 1]) {
+            item.row[i + 1].wins.forEach((bet) => {
+              total++;
+              if (bet === "win") win++;
+            });
+          }
+        } else {
+          win += item.row[i + 1].win;
+          total += item.row[i + 1].total;
         }
       });
       row[i] = { win, total };
     }
     let total = 0;
     let win = 0;
-    row.forEach((item) => {
+    row.slice(0, row.length - 2).forEach((item) => {
       win += item.win;
       total += item.total;
     });
-    row.push("");
-    row.push("");
     row.push({ win, total });
     row.unshift("AVERAGE");
     return row;
