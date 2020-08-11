@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Cell from "./cell";
@@ -61,8 +60,7 @@ const DataTable = ({ data, newDate, reloadData }) => {
       initialData.push({ id: key, row: [...row, ...calculateStats(row)] });
     }
     // Calculate averages
-    const row = Array(dates.length + 1).fill("");
-    row[0] = "Average";
+    const row = calculateAverages(initialData);
     const avgRow = { id: "avg", row };
     initialData.unshift(avgRow);
     setTableData(initialData);
@@ -71,6 +69,34 @@ const DataTable = ({ data, newDate, reloadData }) => {
   useEffect(() => {
     sortData();
   }, [sort, tableData]);
+
+  const calculateAverages = (data) => {
+    const row = Array(dates.length).fill("");
+    for (let i = 0; i < row.length; i++) {
+      let total = 0;
+      let win = 0;
+      data.forEach((item) => {
+        if (item.row[i + 1]) {
+          item.row[i + 1].wins.forEach((bet) => {
+            total++;
+            if (bet === "win") win++;
+          });
+        }
+      });
+      row[i] = { win, total };
+    }
+    let total = 0;
+    let win = 0;
+    row.forEach((item) => {
+      win += item.win;
+      total += item.total;
+    });
+    row.push("");
+    row.push("");
+    row.push({ win, total });
+    row.unshift("AVERAGE");
+    return row;
+  };
 
   const formatDate = (date) => {
     return `${date.slice(4, 6)}/${date.slice(6, 8)}/${date.slice(2, 4)}`;
@@ -87,10 +113,13 @@ const DataTable = ({ data, newDate, reloadData }) => {
   };
 
   const sortNames = () => {
-    const dataCopy = [...tableData];
-    const sortDirNum = sort.dir ? 1 : -1;
-    dataCopy.sort((a, b) => sortDirNum * a.row[0].localeCompare(b.row[0]));
-    setSortedData(dataCopy);
+    if (tableData.length) {
+      const dataCopy = [...tableData];
+      const avg = dataCopy.shift();
+      const sortDirNum = sort.dir ? 1 : -1;
+      dataCopy.sort((a, b) => sortDirNum * a.row[0].localeCompare(b.row[0]));
+      setSortedData([avg, ...dataCopy]);
+    }
   };
 
   const calculateWinScore = (arr) => {
@@ -107,36 +136,42 @@ const DataTable = ({ data, newDate, reloadData }) => {
   };
 
   const sortBets = () => {
-    const dataCopy = [...tableData];
-    const sortDirNum = sort.dir ? 1 : -1;
-    const idx = sort.on;
-    dataCopy.sort((a, b) => {
-      return (
-        sortDirNum *
-        (calculateWinScore(a.row[idx]) - calculateWinScore(b.row[idx]))
-      );
-    });
-    setSortedData(dataCopy);
+    if (tableData.length) {
+      const dataCopy = [...tableData];
+      const avg = dataCopy.shift();
+      const sortDirNum = sort.dir ? 1 : -1;
+      const idx = sort.on;
+      dataCopy.sort((a, b) => {
+        return (
+          sortDirNum *
+          (calculateWinScore(a.row[idx]) - calculateWinScore(b.row[idx]))
+        );
+      });
+      setSortedData([avg, ...dataCopy]);
+    }
   };
 
   const sortStats = () => {
-    const dataCopy = [...tableData];
-    const sortDirNum = sort.dir ? 1 : -1;
-    const totalRows = dataCopy[0].row.length;
-    let idx;
-    if (sort.on === "bet10") {
-      idx = totalRows - 3;
-    } else if (sort.on === "bet5") {
-      idx = totalRows - 2;
-    } else {
-      idx = totalRows - 1;
+    if (tableData.length) {
+      const dataCopy = [...tableData];
+      const avg = dataCopy.shift();
+      const sortDirNum = sort.dir ? 1 : -1;
+      const totalRows = dataCopy[0].row.length;
+      let idx;
+      if (sort.on === "bet10") {
+        idx = totalRows - 3;
+      } else if (sort.on === "bet5") {
+        idx = totalRows - 2;
+      } else {
+        idx = totalRows - 1;
+      }
+      dataCopy.sort((a, b) => {
+        const per1 = a.row[idx].total ? a.row[idx].win / a.row[idx].total : -1;
+        const per2 = b.row[idx].total ? b.row[idx].win / b.row[idx].total : -1;
+        return sortDirNum * (per1 - per2);
+      });
+      setSortedData([avg, ...dataCopy]);
     }
-    dataCopy.sort((a, b) => {
-      const per1 = a.row[idx].total ? a.row[idx].win / a.row[idx].total : -1;
-      const per2 = b.row[idx].total ? b.row[idx].win / b.row[idx].total : -1;
-      return sortDirNum * (per1 - per2);
-    });
-    setSortedData(dataCopy);
   };
 
   const downloadToCSV = () => {

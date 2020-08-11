@@ -15,20 +15,20 @@ th:last-child,
 td:last-child {
   position: sticky;
   right: 0px;
-  min-width: 150px;
+  min-width: 170px;
 }
 
 th:nth-last-child(2),
 td:nth-last-child(2) {
   position: sticky;
-  right: 150px;
+  right: 170px;
   min-width: 150px;
 }
 
 th:nth-last-child(3),
 td:nth-last-child(3) {
   position: sticky;
-  right: 300px;
+  right: 320px;
 }
 
 th,
