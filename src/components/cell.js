@@ -124,20 +124,24 @@ const Cell = ({ dates, item, id, idx, reloadData }) => {
       return (
         <>
           {item}
-          <button
-            style={{
-              background: "transparent",
-              border: 0,
-              cursor: "pointer",
-            }}
-            onClick={deletePerson}
-          >
-            <span role="img" aria-label="delete">
-              ❌
-            </span>
-          </button>
+          {id !== "avg" && (
+            <button
+              style={{
+                background: "transparent",
+                border: 0,
+                cursor: "pointer",
+              }}
+              onClick={deletePerson}
+            >
+              <span role="img" aria-label="delete">
+                ❌
+              </span>
+            </button>
+          )}
         </>
       );
+    } else if (id === "avg") {
+      return null;
     }
     return (
       <button style={style} onClick={() => setIsEditing(true)}>

@@ -60,6 +60,11 @@ const DataTable = ({ data, newDate, reloadData }) => {
       });
       initialData.push({ id: key, row: [...row, ...calculateStats(row)] });
     }
+    // Calculate averages
+    const row = Array(dates.length + 1).fill("");
+    row[0] = "Average";
+    const avgRow = { id: "avg", row };
+    initialData.unshift(avgRow);
     setTableData(initialData);
   }, [newDate, data]);
 
@@ -68,11 +73,7 @@ const DataTable = ({ data, newDate, reloadData }) => {
   }, [sort, tableData]);
 
   const formatDate = (date) => {
-    return `${date.slice(4, 6)}/${date.slice(6, 8)}/${date.slice(0, 4)}`;
-  };
-
-  const deletePerson = (id) => {
-    axios.post("/api/delete-person", { id }).then(reloadData);
+    return `${date.slice(4, 6)}/${date.slice(6, 8)}/${date.slice(2, 4)}`;
   };
 
   const sortData = () => {
